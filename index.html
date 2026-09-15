@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WebGIS Jaringan Jalan</title>
 
+  <!-- Favicon Dummy untuk Mencegah Error 404 Favicon -->
+  <link rel="shortcut icon" href="#" />
+
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
@@ -52,7 +55,7 @@
       attribution: 'Tiles © Esri'
     });
 
-    // Warna berdasarkan atribut "kondisi"
+    // Warna berdasarkan atribut "kondisi_jalan"
     function getColor(kondisi) {
       switch (kondisi) {
         case 'Baik': return '#2ecc71';          // Hijau
@@ -64,8 +67,10 @@
 
     // Dynamic Style
     function style(feature) {
+      // Menyesuaikan dengan atribut "kondisi_jalan" dari GeoJSON
+      const kondisi = feature.properties.kondisi_jalan || feature.properties.kondisi;
       return {
-        color: getColor(feature.properties.kondisi),
+        color: getColor(kondisi),
         weight: 4,
         opacity: 0.85
       };
@@ -75,13 +80,21 @@
     function onEachFeature(feature, layer) {
       if (feature.properties) {
         const p = feature.properties;
+        
+        // Handling fallback jika ada perbedaan penamaan atribut
+        const ruas = p.ruas_jalan || p.ruas || '-';
+        const status = p.status_jalan || p.status || '-';
+        const kondisi = p.kondisi_jalan || p.kondisi || '-';
+        const perkerasan = p.jenis_perkerasan || p.perkerasan || '-';
+        const panjang = p.panjang_jalan || p.panjang_m || 0;
+
         const content = `
           <div style="font-size:13px;">
-            <b>Ruas:</b> ${p.ruas || '-'}<br>
-            <b>Status:</b> ${p.status || '-'}<br>
-            <b>Kondisi:</b> <b>${p.kondisi || '-'}</b><br>
-            <b>Panjang:</b> ${(p.panjang_m ? p.panjang_m.toFixed(2) : 0)} m<br>
-            <b>Perkerasan:</b> ${p.perkerasan || '-'}<br>
+            <b>Ruas:</b> ${ruas}<br>
+            <b>Status:</b> ${status}<br>
+            <b>Kondisi:</b> <b>${kondisi}</b><br>
+            <b>Panjang:</b> ${typeof panjang === 'number' ? panjang.toFixed(2) : panjang} m<br>
+            <b>Perkerasan:</b> ${perkerasan}<br>
             <small><i>${p.sumber || ''}</i></small>
           </div>
         `;
@@ -89,15 +102,21 @@
       }
     }
 
-    // Fetch GeoJSON 
-    fetch('jalan.geojson')
-      .then(res => res.json())
+    // Fetch GeoJSON menggunakan Relative Path ./
+    fetch('./jalan.geojson')
+      .then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! Status: ${res.status}`);
+        }
+        return res.json();
+      })
       .then(data => {
         const jalanLayer = L.geoJSON(data, {
           style: style,
           onEachFeature: onEachFeature
         }).addTo(map);
 
+        // Otomatis zoom ke area fitur jalan
         map.fitBounds(jalanLayer.getBounds());
       })
       .catch(err => console.error('Gagal memuat GeoJSON:', err));
