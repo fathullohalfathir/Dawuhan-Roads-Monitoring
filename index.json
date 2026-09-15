@@ -1,1 +1,40 @@
 
+{
+  "data": [
+    {
+      "id": "geometryData",
+      "label": "GeoJSON Data Source",
+      "elements": [
+        {
+          "id": "ruas",
+          "label": "Nama Ruas Jalan",
+          "type": "DIMENSION"
+        },
+        {
+          "id": "kondisi",
+          "label": "Kondisi Jalan",
+          "type": "DIMENSION"
+        }
+      ]
+    }
+  ],
+  "style": [
+    {
+      "id": "mapStyle",
+      "label": "Pengaturan Peta",
+      "elements": [
+        {
+          "id": "zoomLevel",
+          "label": "Default Zoom Level",
+          "type": "SELECT",
+          "defaultValue": "13",
+          "options": [
+            {"label": "12", "value": "12"},
+            {"label": "13", "value": "13"},
+            {"label": "14", "value": "14"}
+          ]
+        }
+      ]
+    }
+  ]
+}
