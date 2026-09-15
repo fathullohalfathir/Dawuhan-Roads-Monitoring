@@ -1,1 +1,12 @@
-
+{
+  "name": "WebGIS Jaringan Jalan",
+  "organization": "Pemerintah Kabupaten / Pengembang GIS",
+  "description": "Visualisasi peta interaktif jaringan jalan berbasis Leaflet JS dan GeoJSON.",
+  "logoUrl": "https://raw.githubusercontent.com/username/repo-name/main/logo.png",
+  "companyUrl": "https://github.com/username/repo-name",
+  "supportUrl": "https://github.com/username/repo-name/issues",
+  "privacyPolicyUrl": "https://github.com/username/repo-name",
+  "packageUrl": "https://username.github.io/repo-name/",
+  "termsOfServiceUrl": "https://github.com/username/repo-name",
+  "devMode": false
+}
