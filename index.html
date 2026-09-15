@@ -96,7 +96,7 @@
         const p = feature.properties;
         
         // Fallback pencocokan nama atribut GeoJSON
-        const idRuas = p.id || p.id_ruas || '-';
+        const idRuas = p.id_ruas || p.id_ruas || '-';
         const ruas = p.ruas_jalan || p.ruas || '-';
         const status = p.status_jalan || p.status || '-';
         const kondisi = p.kondisi_jalan || p.kondisi || '-';
