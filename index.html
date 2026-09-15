@@ -18,6 +18,8 @@
       padding: 0;
       font-family: Arial, sans-serif;
     }
+    
+    /* Styling Legenda */
     .legend {
       background: white;
       padding: 10px;
@@ -33,6 +35,18 @@
       margin-right: 8px;
       margin-top: 6px;
     }
+
+    /* Styling Custom Label ID Ruas */
+    .id-label {
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid #333;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: bold;
+      color: #2c3e50;
+      padding: 1px 4px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
   </style>
 </head>
 <body>
@@ -42,6 +56,7 @@
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
+    // Inisialisasi Peta
     const map = L.map('map').setView([-7.237, 109.112], 13);
 
     // Basemap OSM
@@ -55,19 +70,18 @@
       attribution: 'Tiles © Esri'
     });
 
-    // Warna berdasarkan atribut "kondisi_jalan"
+    // Pewarnaan berdasarkan atribut kondisi jalan
     function getColor(kondisi) {
       switch (kondisi) {
         case 'Baik': return '#2ecc71';          // Hijau
         case 'Sebagian Rusak': return '#f39c12';// Oranye
         case 'Rusak': return '#e74c3c';         // Merah
-        default: return '#3498db';              // Biru
+        default: return '#3498db';              // Biru (default)
       }
     }
 
-    // Dynamic Style
+    // Dynamic Style untuk Garis Jalan
     function style(feature) {
-      // Menyesuaikan dengan atribut "kondisi_jalan" dari GeoJSON
       const kondisi = feature.properties.kondisi_jalan || feature.properties.kondisi;
       return {
         color: getColor(kondisi),
@@ -76,12 +90,12 @@
       };
     }
 
-// Pop-up Info
+    // Pemrosesan Setiap Fitur (Label & Popup)
     function onEachFeature(feature, layer) {
       if (feature.properties) {
         const p = feature.properties;
         
-        // Handling fallback jika ada perbedaan penamaan atribut
+        // Fallback pencocokan nama atribut GeoJSON
         const idRuas = p.id || p.id_ruas || '-';
         const ruas = p.ruas_jalan || p.ruas || '-';
         const status = p.status_jalan || p.status || '-';
@@ -89,6 +103,14 @@
         const perkerasan = p.jenis_perkerasan || p.perkerasan || '-';
         const panjang = p.panjang_jalan || p.panjang_m || 0;
 
+        // 1. Label ID Ruas Permanen di Peta
+        layer.bindTooltip(`${idRuas}`, {
+          permanent: true,
+          direction: 'center',
+          className: 'id-label'
+        });
+
+        // 2. Popup Informasi Detail saat Garis Diklik
         const content = `
           <div style="font-size:13px;">
             <b>ID Ruas:</b> ${idRuas}<br>
@@ -118,15 +140,19 @@
           onEachFeature: onEachFeature
         }).addTo(map);
 
-        // Otomatis zoom ke area fitur jalan
+        // Autofit tampilan peta ke cakupan area data jalan
         map.fitBounds(jalanLayer.getBounds());
       })
       .catch(err => console.error('Gagal memuat GeoJSON:', err));
 
-    // Control Layer & Legend
-    const baseMaps = { "OpenStreetMap": osm, "Satelit Esri": esriSat };
+    // Kontrol Layer Peta Dasar
+    const baseMaps = { 
+      "OpenStreetMap": osm, 
+      "Satelit Esri": esriSat 
+    };
     L.control.layers(baseMaps).addTo(map);
 
+    // Legenda Kondisi Jalan
     const legend = L.control({ position: 'bottomright' });
     legend.onAdd = function () {
       const div = L.DomUtil.create('div', 'legend');
