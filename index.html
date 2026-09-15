@@ -89,8 +89,8 @@
       }
     }
 
-    // Fetch GeoJSON Jalan
-    fetch('Jalan.geojson')
+    // Fetch GeoJSON 
+    fetch('jalan.geojson')
       .then(res => res.json())
       .then(data => {
         const jalanLayer = L.geoJSON(data, {
